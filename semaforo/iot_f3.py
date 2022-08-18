@@ -1,4 +1,12 @@
+
 import tkinter as tk
+from tkinter import CENTER, PhotoImage, ttk
+from turtle import width
+from index import mongo
+from faker import Faker
+from PIL import Image, ImageTk
+
+mongoDb = mongo()
 
 ve = 1
 
@@ -10,8 +18,8 @@ appmain.title("IoT_Semaforo")
 appmain.iconbitmap("img/semaforo.ico")
 appmain.config(
     bg="gray99",
-    relief="groove",
-    cursor="gumby"
+    relief="groove"
+
 )
 
 offFrame = tk.Frame()
@@ -127,7 +135,7 @@ def cambio():
     va = 2
     vi = 3
     vo = 1
-
+    ex = Faker()
     if ve == 1:
 
         verdeFrame.pack(side="right", anchor=tk.N)
@@ -135,6 +143,7 @@ def cambio():
         rojoFrame.forget()
         offFrame.forget()
         ve = va
+        mongoDb.insertCollection("Amarrillo", ex.ipv4())
 
     elif ve == 2:
 
@@ -143,6 +152,7 @@ def cambio():
         rojoFrame.forget()
         offFrame.forget()
         ve = vi
+        mongoDb.insertCollection("Verde", ex.ipv4())
 
     elif ve == 3:
 
@@ -151,16 +161,47 @@ def cambio():
         verdeFrame.forget()
         offFrame.forget()
         ve = vo
+        mongoDb.insertCollection("Rojo", ex.ipv4())
+    table()
 
 
+img = Image.open('./img/pushBotton.jpeg')
+img = img.resize((110, 90))
+img = ImageTk.PhotoImage(img)
 btn_cambio_appmain = tk.Button(
     appmain,
-    text="¡click mi!",
-    font="Arial",
+    image=img,
+    font=("Arial 12 bold"),
     fg="dark violet",
     bg="snow",
+    cursor="hand2",
     command=cambio
-).place(x=92, y=250)
+).place(x=75, y=170)
+
+# Codigo Alexander
 
 
+def table():
+    tabla = ttk.Treeview(appmain)
+    tabla['columns'] = ('Metros', 'Color', 'Ip')
+    tabla.column('Metros', width=100, anchor=CENTER
+                 )
+    tabla.column('Color', width=100, anchor=CENTER)
+    tabla.column('Ip', width=100, anchor=CENTER)
+    tabla.heading('Metros', text='Metros', anchor=CENTER)
+    tabla.heading('Color', text='Color', anchor=CENTER)
+    tabla.heading('Ip', text='Ip', anchor=CENTER)
+
+    x = 0
+    ex = Faker()
+
+    for i in range(mongoDb.countCollection()):
+        ip = ex.ipv4()
+        datos = mongoDb.getCollection(i)
+        tabla.insert(parent="", index=i, id=i, text="",
+                     values=(datos[0], datos[1], datos[2]))
+    tabla.place(x=300, y=100)
+
+
+table()
 appmain.mainloop()
