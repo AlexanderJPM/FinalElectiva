@@ -29,16 +29,3 @@ class mongo():
             "IP": Ip
         }
         self.records.insert_one(new_s)
-
-
-# mongo = mongo()
-# datos = mongo.getCollection(1)
-# print(datos[0])
-
-
-# records = db.nom
-
-# records.insert_one(new_s)
-# datos =
-# for i in range(len(datos)):
-#     print(datos[i]["name"])
